@@ -21,7 +21,6 @@ export default function TextForm(props) {
     const handelCopy = ()=>{
         navigator.clipboard.writeText(text);
         props.showAlert("copied to clipboard", "success");
-
     }
     const handelExtraSpaces = ()=>{
         var newText = text.split(/[ ]+/);
