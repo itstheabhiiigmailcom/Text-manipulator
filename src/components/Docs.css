@@ -1,0 +1,223 @@
+.tu-docs {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.tu-docs-toc {
+  position: sticky;
+  scroll-behavior: smooth;
+  top: 4.5rem;
+  max-height: calc(100vh - 5.5rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.tu-toc-category {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 700;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.tu-toc-tool {
+  display: block;
+  padding: 0.12rem 0.5rem;
+  margin-left: 0.25rem;
+  border-left: 2px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+}
+
+.tu-toc-tool:hover,
+.tu-toc-category:hover {
+  color: var(--bs-primary);
+}
+
+.tu-toc-tool {
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tu-toc-tool.is-active {
+  color: var(--bs-primary);
+  border-left-color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  font-weight: 600;
+}
+
+.tu-toc-category.is-active,
+.tu-toc-category.is-current {
+  color: var(--bs-primary);
+}
+
+.tu-docs-content {
+  max-width: 920px;
+}
+
+.tu-docs-content h1 {
+  font-size: 2rem;
+}
+
+.tu-doc-intro,
+.tu-doc-category {
+  scroll-margin-top: 5rem;
+}
+
+.tu-doc-intro {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.75rem;
+  background: var(--bs-tertiary-bg);
+  margin-bottom: 2rem;
+}
+
+.tu-doc-intro h2 {
+  font-size: 1.3rem;
+}
+
+.tu-doc-intro li {
+  margin-bottom: 0.35rem;
+}
+
+.tu-doc-category {
+  margin-bottom: 2.5rem;
+}
+
+.tu-doc-category > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--bs-border-color);
+}
+
+.tu-doc-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: var(--bs-primary);
+}
+
+.tu-doc-group > h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.tu-doc-tool {
+  scroll-margin-top: 5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.9rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.6rem;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tu-doc-tool.is-target {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.tu-doc-tool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tu-doc-tool h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.tu-doc-summary {
+  font-weight: 500;
+}
+
+.tu-doc-options {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.2rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.tu-doc-options dt {
+  font-weight: 600;
+}
+
+.tu-doc-options dd {
+  margin: 0;
+  color: var(--bs-secondary-color);
+}
+
+.tu-doc-example {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.tu-doc-example pre {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.8rem;
+  border-radius: 0.4rem;
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.tu-doc-example-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bs-secondary-color);
+  margin-bottom: 0.2rem;
+}
+
+.tu-doc-example-note,
+.tu-doc-where {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+}
+
+.tu-doc-where {
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 991.98px) {
+  .tu-docs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tu-docs-toc {
+    position: relative;
+    max-height: 240px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .tu-doc-example {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

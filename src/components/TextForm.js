@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { cleanText, removeExtraSpaces, textStats } from '../tools/text';
+import { lowerCase, titleCase, upperCase } from '../tools/case';
+import { TOOLS_BY_ID } from '../tools/registry';
+import HoverInfo from './HoverInfo';
 
 export default function TextForm(props) {
-  const handleUpClick = () => {
-    let newText = text.toUpperCase();
-    setText(newText);
-    props.showAlert('Converted to Uppercase!', 'success');
-  };
+  const [text, setText] = useState('');
 
-  const handleLowClick = () => {
-    let newText = text.toLowerCase();
-    setText(newText);
-    props.showAlert('Converted to Lowercase!', 'success');
+  const apply = (transform, message) => {
+    setText(transform(text));
+    props.showAlert(message, 'success');
   };
 
   const handleClearClick = () => {
@@ -23,33 +23,40 @@ export default function TextForm(props) {
     props.showAlert('Copied to clipboard', 'success');
   };
 
-  const handleExtraSpaces = () => {
-    let newText = text.split(/[ ]+/).join(' ');
-    setText(newText);
-    props.showAlert('Extra spaces removed!', 'success');
-  };
-
-  const handleCamelCaseClick = () => {
-    let words = text.toLowerCase().split(/\s+/);
-    let camelCaseText = words
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' '); // Join words with spaces
-    setText(camelCaseText);
-    props.showAlert('Converted to Camel Case!', 'success');
-  };
-
   const handleOnChange = (event) => {
     setText(event.target.value);
   };
 
-  const [text, setText] = useState('');
+  const actions = [
+    { label: 'Convert to Uppercase', toolId: 'upper', run: () => apply(upperCase, 'Converted to Uppercase!') },
+    { label: 'Convert to Lowercase', toolId: 'lower', run: () => apply(lowerCase, 'Converted to Lowercase!') },
+    { label: 'Convert to Title Case', toolId: 'title', run: () => apply(titleCase, 'Converted to Title Case!') },
+    { label: 'Remove Extra Spaces', toolId: 'remove-extra-spaces', run: () => apply(removeExtraSpaces, 'Extra spaces removed!') },
+    { label: 'Clean Text', toolId: 'clean-text', run: () => apply(cleanText, 'Blank and duplicate lines removed, spaces tidied!') },
+    { label: 'Copy Text', run: handleCopy },
+    { label: 'Clear', run: handleClearClick },
+  ];
+
+  const renderAction = (action) => {
+    const button = (
+      <button key={action.label} disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={action.run}>
+        {action.label}
+      </button>
+    );
+    const tool = TOOLS_BY_ID[action.toolId];
+    if (!tool) return button;
+    return (
+      <HoverInfo key={action.label} title={action.label} description={tool.description} docId={`tool-${tool.id}`}>
+        {button}
+      </HoverInfo>
+    );
+  };
+
+  const stats = textStats(text);
 
   return (
     <>
-      <div
-        className="container"
-        style={{ color: props.mode === 'dark' ? 'white' : 'black' }}
-      >
+      <div className="container">
         <h2 className="mb-4">{props.heading}</h2>
         <div className="mb-3">
           <textarea
@@ -57,74 +64,27 @@ export default function TextForm(props) {
             value={text}
             onChange={handleOnChange}
             style={{
-              backgroundColor:
-                props.mode === 'dark' ? 'rgb(36 74 104)' : 'white',
+              backgroundColor: props.mode === 'dark' ? 'rgb(36 74 104)' : 'white',
               color: props.mode === 'dark' ? 'white' : 'black',
             }}
             rows="8"
             id="myBox"
+            aria-label="Your text"
           ></textarea>
         </div>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleUpClick}
-        >
-          Convert to Uppercase
-        </button>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleLowClick}
-        >
-          Convert to Lowercase
-        </button>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleClearClick}
-        >
-          Clear
-        </button>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleCopy}
-        >
-          Copy Text
-        </button>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleExtraSpaces}
-        >
-          Remove Extra Spaces
-        </button>
-        <button
-          disabled={text.length === 0}
-          className="btn btn-primary mx-2 my-2"
-          onClick={handleCamelCaseClick}
-        >
-          Convert to Camel Case
-        </button>
+        {actions.map(renderAction)}
+        <Link to="/tools" className="btn btn-outline-primary mx-2 my-2">
+          More tools →
+        </Link>
       </div>
-      <div
-        className="container my-2"
-        style={{ color: props.mode === 'dark' ? 'white' : 'black' }}
-      >
+      <div className="container my-2">
         <h1>Your Text Summary</h1>
         <p>
-          {text.split(/\s+/).filter((element) => element.length !== 0).length}{' '}
-          words and {text.length} characters
+          {stats.words} words and {stats.characters} characters
         </p>
-        <p>
-          {0.008 *
-            text.split(' ').filter((element) => element.length !== 0)
-              .length}{' '}
-          Minutes to read
-        </p>
+        <p>{(0.008 * stats.words).toFixed(2)} Minutes to read</p>
         <h3>Preview</h3>
-        <p>{text.length > 0 ? text : 'Nothing to Preview'}</p>
+        <p style={{ whiteSpace: 'pre-wrap' }}>{text.length > 0 ? text : 'Nothing to Preview'}</p>
       </div>
     </>
   );

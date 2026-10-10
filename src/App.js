@@ -1,67 +1,72 @@
-// import logo from './logo.svg';
 import Alert from './Alert';
 import './App.css';
 import About from './components/About';
+import Docs from './components/Docs';
 import Navbar from './components/Navbar';
 import TextForm from './components/TextForm';
-import React, { useState } from 'react';
+import Workspace from './components/Workspace';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   //usestate to set the dark Mode
-  const [mode, setMode] = useState('light'); //whether dark mode is enabled or not
+  const [mode, setMode] = useState(() => (localStorage.getItem('textutils.mode') === 'dark' ? 'dark' : 'light'));
   //usestate to give an alert
   const [alert, setAlert] = useState(null);
+  const alertTimer = useRef(null);
+
+  useEffect(() => {
+    // Bootstrap 5.3 colour modes restyle every component from this one attribute
+    document.documentElement.setAttribute('data-bs-theme', mode);
+    localStorage.setItem('textutils.mode', mode);
+  }, [mode]);
 
   const showAlert = (message, type) => {
     setAlert({
       msg: message,
       type: type,
     });
-    setTimeout(() => {
-      // setting timeout to dismiss the alert automatically after 1500 ms
-      setAlert(null);
-    }, 1500);
+    clearTimeout(alertTimer.current);
+    // setting timeout to dismiss the alert automatically after 2000 ms
+    alertTimer.current = setTimeout(() => setAlert(null), 2000);
   };
 
   const toggleMode = () => {
-    // removeBodyClasses();
-    // console.log(cls);
-    // document.body.classList.add('bg-'+cls);
     if (mode === 'light') {
       setMode('dark');
-      document.body.style.backgroundColor = '#042743';
-      showAlert('Dark mode has beeen Enabled', 'success');
-      // document.title = "TextUtils - Dark Mode";        // To change the title, when goes from dark to light mode
-      // setInterval(()=>{
-      //   document.title = "TextUtils is Amazing";
-      // },2000)
-      // setInterval(()=>{
-      //   document.title = "Install TextUtils Now";
-      // },1500)
+      document.title = 'Textsmith - Dark Mode';
+      showAlert('Dark mode has been enabled', 'success');
     } else {
       setMode('light');
-      document.body.style.backgroundColor = 'white';
+      document.title = 'Textsmith - Light Mode';
       showAlert('Light mode has been enabled', 'success');
-      document.title = 'TextUtils - Light Mode';
     }
   };
 
   return (
     <>
       <Router>
-        <Navbar title="Textutils1" mode={mode} toggleMode={toggleMode} />
+        <Navbar title="Textsmith" mode={mode} toggleMode={toggleMode} />
         <Alert alert={alert} />
-        <div className="container my-3">
+        <div className="my-3">
           <Routes>
-            <Route exact path="/about" element={<About mode={mode} />}></Route>
+            <Route exact path="/about" element={<About />}></Route>
+            <Route exact path="/docs" element={<Docs />}></Route>
+            <Route
+              exact
+              path="/tools"
+              element={
+                <div className="container-fluid tu-container">
+                  <Workspace showAlert={showAlert} />
+                </div>
+              }
+            ></Route>
             <Route
               exact
               path="/"
               element={
                 <TextForm
-                  heading="Try TextUtils - Word counter, Character counter, 
-        Remove Extra spaces"
+                  heading="Try Textsmith - Word counter, Character counter, Remove Extra spaces"
                   mode={mode}
                   showAlert={showAlert}
                 />
