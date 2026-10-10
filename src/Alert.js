@@ -8,9 +8,9 @@ export default function Alert(props) {
     }
 
     return (                                    // yahan agar props.alert null hoga to aage kaa evaluate nhi hoga because and operator hai
-        <div style={{height: '50px'}}>          {/*Alert ka height set kr dene se baar baar layout shift nhi hoga because now it has own height*/}
-       { props.alert && <div className={`alert alert-${props.alert.type} alert-dismissible fade show`} role="alert">
-            <strong>{capitalize(props.alert.type)}</strong>{props.alert.msg}
+        <div className="tu-alert-host" aria-live="polite">     {/*Alert ko fixed position diya hai taaki layout shift na ho*/}
+       { props.alert && <div className={`alert alert-${props.alert.type} shadow-sm mb-0`} role="alert">
+            <strong>{capitalize(props.alert.type)}: </strong>{props.alert.msg}
         </div>}
         </div>
     )
