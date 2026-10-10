@@ -1,0 +1,143 @@
+.tu-about {
+  max-width: 1040px;
+}
+
+.tu-about-hero {
+  padding: 2.5rem 0 1.5rem;
+}
+
+.tu-about-hero h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.tu-about-hero .lead {
+  max-width: 680px;
+  color: var(--bs-secondary-color);
+}
+
+.tu-about-section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.tu-about-section h2,
+.tu-about-cta h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.tu-about-section > p {
+  max-width: 760px;
+}
+
+.tu-about-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.tu-about-stats > div {
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.tu-about-stats strong {
+  font-size: 1.6rem;
+  color: var(--bs-primary);
+}
+
+.tu-about-stats span {
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color);
+}
+
+.tu-about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.9rem;
+}
+
+.tu-about-card {
+  padding: 1rem 1.1rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+}
+
+.tu-about-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0.4rem 0;
+}
+
+.tu-about-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color);
+}
+
+.tu-about-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 0.45rem;
+  color: #fff;
+  background: var(--bs-primary);
+}
+
+.tu-about-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.tu-about-steps li {
+  counter-increment: step;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.6rem;
+  background: var(--bs-tertiary-bg);
+}
+
+.tu-about-steps li::before {
+  content: counter(step);
+  display: inline-grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-bottom: 0.25rem;
+  border-radius: 50%;
+  font-weight: 700;
+  color: #fff;
+  background: var(--bs-primary);
+}
+
+.tu-about-steps span {
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color);
+}
+
+.tu-about-cta {
+  margin: 1.5rem 0 3rem;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 0.9rem;
+  background: rgba(var(--bs-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.3);
+}
