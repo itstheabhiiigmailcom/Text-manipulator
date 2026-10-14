@@ -39,7 +39,7 @@ export default function TextForm(props) {
 
   const renderAction = (action) => {
     const button = (
-      <button key={action.label} disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={action.run}>
+      <button key={action.label} disabled={text.length === 0} className="btn btn-primary" onClick={action.run}>
         {action.label}
       </button>
     );
@@ -72,19 +72,21 @@ export default function TextForm(props) {
             aria-label="Your text"
           ></textarea>
         </div>
-        {actions.map(renderAction)}
-        <Link to="/tools" className="btn btn-outline-primary mx-2 my-2">
-          More tools →
-        </Link>
+        <div className="tu-home-actions">
+          {actions.map(renderAction)}
+          <Link to="/tools" className="btn btn-outline-primary">
+            More tools →
+          </Link>
+        </div>
       </div>
-      <div className="container my-2">
-        <h1>Your Text Summary</h1>
+      <div className="container my-4">
+        <h2>Your Text Summary</h2>
         <p>
           {stats.words} words and {stats.characters} characters
         </p>
         <p>{(0.008 * stats.words).toFixed(2)} Minutes to read</p>
         <h3>Preview</h3>
-        <p style={{ whiteSpace: 'pre-wrap' }}>{text.length > 0 ? text : 'Nothing to Preview'}</p>
+        <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{text.length > 0 ? text : 'Nothing to Preview'}</p>
       </div>
     </>
   );

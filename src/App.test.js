@@ -78,6 +78,36 @@ describe('navigation, docs and about', () => {
     expect(document.getElementById('tool-sort-az')).not.toBeInTheDocument();
   });
 
+  test('the mobile menu closes after choosing a page', () => {
+    render(<App />);
+    const toggle = screen.getByRole('button', { name: 'Toggle navigation' });
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(screen.getByRole('link', { name: 'Docs' }));
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('on small screens the contents dropdown shows the current entry and closes after a jump', async () => {
+    goTo('/docs');
+    render(<App />);
+    const contents = within(screen.getByRole('complementary', { name: 'Contents' }));
+    const toggle = contents.getByRole('button', { name: /Contents/ });
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(contents.getByRole('link', { name: 'JSON Format' }));
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    const entries = Array.from(document.querySelectorAll('#getting-started, .tu-doc-tool'));
+    const index = entries.findIndex((el) => el.id === 'tool-json-format');
+    jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function rect() {
+      const top = (entries.indexOf(this) - index) * 300;
+      return { top, bottom: top + 280, left: 0, right: 0, width: 0, height: 280 };
+    });
+    fireEvent.scroll(window);
+    await waitFor(() => expect(toggle).toHaveTextContent('Developer · JSON Format'));
+    jest.restoreAllMocks();
+  });
+
   test('about page explains the goal', () => {
     goTo('/about');
     render(<App />);

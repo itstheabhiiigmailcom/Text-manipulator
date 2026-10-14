@@ -147,6 +147,9 @@ function FindReplaceDoc({ isTarget }) {
   );
 }
 
+const tocLabel = (section, group, tool) =>
+  section.category.layout === 'tabs' || section.category.pairs ? `${group.title} ${tool.label}` : tool.label;
+
 const matchesQuery = (query, ...texts) => {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
   const haystack = texts.join(' ').toLowerCase();
@@ -170,8 +173,25 @@ export default function Docs() {
     return () => cancelAnimationFrame(frame);
   }, [target, key]);
 
+  // On small screens the contents list is a dropdown under a sticky bar.
+  const [tocOpen, setTocOpen] = useState(false);
+  const asideRef = useRef(null);
+
+  useEffect(() => {
+    if (!tocOpen) return undefined;
+    const onKey = (e) => e.key === 'Escape' && setTocOpen(false);
+    const onPointer = (e) => asideRef.current && !asideRef.current.contains(e.target) && setTocOpen(false);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPointer);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointer);
+    };
+  }, [tocOpen]);
+
   const jump = (event, id) => {
     event.preventDefault();
+    setTocOpen(false);
     navigate({ hash: id }, { replace: true });
   };
 
@@ -245,69 +265,93 @@ export default function Docs() {
     const bottom = top + link.offsetHeight;
     if (top < toc.scrollTop + 60) toc.scrollTop = Math.max(0, top - 60);
     else if (bottom > toc.scrollTop + toc.clientHeight - 20) toc.scrollTop = bottom - toc.clientHeight + 60;
-  }, [activeId]);
+  }, [activeId, tocOpen]);
 
   const linkClass = (base, id) => `${base} ${activeId === id ? 'is-active' : ''}`;
+  const activeLabel = useMemo(() => {
+    if (activeId === 'getting-started') return 'Getting started';
+    if (activeId === 'tool-find-replace') return 'Find & Replace';
+    for (const section of sections) {
+      for (const { group, tools } of section.groups) {
+        const tool = tools.find((t) => activeId === `tool-${t.id}`);
+        if (tool) return `${section.category.label} · ${tocLabel(section, group, tool)}`;
+      }
+    }
+    return 'Documentation';
+  }, [activeId, sections]);
   const categoryHasActive = ({ groups, showFind }) =>
     (showFind && activeId === 'tool-find-replace') || groups.some(({ tools }) => tools.some((t) => activeId === `tool-${t.id}`));
 
   return (
     <div className="container-fluid tu-container tu-docs">
-      <aside className="tu-docs-toc" aria-label="Contents" ref={tocRef}>
-        <input
-          type="search"
-          className="form-control form-control-sm mb-2"
-          placeholder="Filter actions…"
-          aria-label="Filter documentation"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <nav>
-          {!query && (
-            <a
-              href="#getting-started"
-              className={linkClass('tu-toc-category', 'getting-started')}
-              aria-current={activeId === 'getting-started' ? 'location' : undefined}
-              onClick={(e) => jump(e, 'getting-started')}
-            >
-              Getting started
-            </a>
-          )}
-          {sections.map((section) => (
-            <div key={section.category.id}>
+      <aside className={`tu-docs-toc ${tocOpen ? 'is-open' : ''}`} aria-label="Contents" ref={asideRef}>
+        <button
+          type="button"
+          className="tu-docs-toc-toggle"
+          aria-expanded={tocOpen}
+          aria-controls="docs-toc-panel"
+          onClick={() => setTocOpen(!tocOpen)}
+        >
+          <span className="tu-docs-toc-heading">Contents</span>
+          <span className="tu-docs-toc-current">{activeLabel}</span>
+          <span className="tu-chevron" aria-hidden="true">▾</span>
+        </button>
+        <div id="docs-toc-panel" className="tu-docs-toc-panel" ref={tocRef}>
+          <input
+            type="search"
+            className="form-control form-control-sm mb-2"
+            placeholder="Filter actions…"
+            aria-label="Filter documentation"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <nav>
+            {!query && (
               <a
-                href={`#cat-${section.category.id}`}
-                className={`tu-toc-category ${categoryHasActive(section) ? 'is-current' : ''}`}
-                onClick={(e) => jump(e, `cat-${section.category.id}`)}
+                href="#getting-started"
+                className={linkClass('tu-toc-category', 'getting-started')}
+                aria-current={activeId === 'getting-started' ? 'location' : undefined}
+                onClick={(e) => jump(e, 'getting-started')}
               >
-                {section.category.label}
+                Getting started
               </a>
-              {section.showFind && (
+            )}
+            {sections.map((section) => (
+              <div key={section.category.id}>
                 <a
-                  href="#tool-find-replace"
-                  className={linkClass('tu-toc-tool', 'tool-find-replace')}
-                  aria-current={activeId === 'tool-find-replace' ? 'location' : undefined}
-                  onClick={(e) => jump(e, 'tool-find-replace')}
+                  href={`#cat-${section.category.id}`}
+                  className={`tu-toc-category ${categoryHasActive(section) ? 'is-current' : ''}`}
+                  onClick={(e) => jump(e, `cat-${section.category.id}`)}
                 >
-                  Find & Replace
+                  {section.category.label}
                 </a>
-              )}
-              {section.groups.flatMap(({ group, tools }) =>
-                tools.map((tool) => (
+                {section.showFind && (
                   <a
-                    key={tool.id}
-                    href={`#tool-${tool.id}`}
-                    className={linkClass('tu-toc-tool', `tool-${tool.id}`)}
-                    aria-current={activeId === `tool-${tool.id}` ? 'location' : undefined}
-                    onClick={(e) => jump(e, `tool-${tool.id}`)}
+                    href="#tool-find-replace"
+                    className={linkClass('tu-toc-tool', 'tool-find-replace')}
+                    aria-current={activeId === 'tool-find-replace' ? 'location' : undefined}
+                    onClick={(e) => jump(e, 'tool-find-replace')}
                   >
-                    {section.category.layout === 'tabs' || section.category.pairs ? `${group.title} ${tool.label}` : tool.label}
+                    Find & Replace
                   </a>
-                ))
-              )}
-            </div>
-          ))}
-        </nav>
+                )}
+                {section.groups.flatMap(({ group, tools }) =>
+                  tools.map((tool) => (
+                    <a
+                      key={tool.id}
+                      href={`#tool-${tool.id}`}
+                      className={linkClass('tu-toc-tool', `tool-${tool.id}`)}
+                      aria-current={activeId === `tool-${tool.id}` ? 'location' : undefined}
+                      onClick={(e) => jump(e, `tool-${tool.id}`)}
+                    >
+                      {tocLabel(section, group, tool)}
+                    </a>
+                  ))
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
       </aside>
 
       <main className="tu-docs-content">
@@ -322,7 +366,7 @@ export default function Docs() {
                 <strong>Quick edits:</strong> the <Link to="/">Textsmith</Link> home page has the most common actions — uppercase, lowercase, title case, removing extra spaces and cleaning text — plus word and character counts.
               </li>
               <li>
-                <strong>All tools:</strong> on <Link to="/tools">All Tools</Link>, type or paste into <em>Input</em>. Open a section on the right and click an action to select it. The result appears in <em>Output</em> immediately and keeps updating while you type.
+                <strong>All tools:</strong> on <Link to="/tools">All Tools</Link>, type or paste into <em>Input</em>. Open a section in the Tools panel (on the right, or the Tools button on phones) and click an action to select it. The result appears in <em>Output</em> immediately and keeps updating while you type.
               </li>
               <li>
                 <strong>Combine actions:</strong> selected actions stay highlighted and numbered. Select several and they run in that order (1, 2, 3…). Click an action again, or the × in the "Applied" bar, to remove it.

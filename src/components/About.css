@@ -141,3 +141,50 @@
   background: rgba(var(--bs-primary-rgb), 0.1);
   border: 1px solid rgba(var(--bs-primary-rgb), 0.3);
 }
+
+@media (max-width: 767.98px) {
+  .tu-about-hero {
+    padding: 1.25rem 0 1rem;
+  }
+
+  .tu-about-hero h1 {
+    font-size: 1.9rem;
+  }
+
+  .tu-about-section {
+    padding: 1.25rem 0;
+  }
+
+  .tu-about-section h2,
+  .tu-about-cta h2 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .tu-about-hero .btn {
+    flex: 1 1 0;
+  }
+
+  .tu-about-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tu-about-stats strong {
+    font-size: 1.35rem;
+  }
+
+  .tu-about-grid,
+  .tu-about-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tu-about-cta {
+    padding: 1.5rem 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .tu-about-cta .btn {
+    width: 100%;
+  }
+}
