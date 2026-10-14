@@ -8,6 +8,32 @@
   --bs-border-color: #275680;
 }
 
+:root {
+  /* Overwritten by the Navbar with its measured height */
+  --tu-nav-h: 3.6rem;
+}
+
+html {
+  scroll-padding-top: calc(var(--tu-nav-h) + 1rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+pre,
+code {
+  overflow-wrap: anywhere;
+}
+
 /* Translucent so content scrolling underneath shows through blurred */
 .tu-navbar {
   background-color: rgba(var(--bs-body-bg-rgb), 0.72);
@@ -21,14 +47,101 @@
   color: var(--bs-primary);
 }
 
+.tu-mode-switch {
+  margin: 0;
+}
+
+@media (min-width: 992px) {
+  .tu-nav-inner {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+  }
+}
+
+/* Mobile menu: slides open by animating the row height from 0 to its content height */
+@media (max-width: 991.98px) {
+  .tu-nav-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease;
+  }
+
+  .tu-nav-collapse.is-open {
+    grid-template-rows: 1fr;
+  }
+
+  .tu-nav-inner {
+    min-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: visibility 0s linear 0.25s;
+  }
+
+  .tu-nav-collapse.is-open .tu-nav-inner {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .tu-navbar .navbar-nav {
+    padding-top: 0.5rem;
+  }
+
+  .tu-navbar .nav-link {
+    padding: 0.6rem 0.25rem;
+    border-bottom: 1px solid rgba(var(--bs-border-color-rgb, 128, 128, 128), 0.25);
+  }
+
+  .tu-mode-switch {
+    padding-top: 0.25rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-nav-collapse,
+  .tu-nav-inner {
+    transition: none;
+  }
+}
+
 .tu-container {
   max-width: 1600px;
 }
 
+/* Home page actions: wrap on wide screens, a tidy two-column grid on phones */
+.tu-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .tu-home-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tu-home-actions .tu-hover {
+    display: flex;
+  }
+
+  .tu-home-actions .btn {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
 .tu-alert-host {
   position: fixed;
-  top: 4.5rem;
+  top: calc(var(--tu-nav-h) + 0.75rem);
   right: 1rem;
   z-index: 1080;
   max-width: min(420px, calc(100vw - 2rem));
+}
+
+@media (max-width: 575.98px) {
+  .tu-alert-host {
+    left: 1rem;
+  }
 }

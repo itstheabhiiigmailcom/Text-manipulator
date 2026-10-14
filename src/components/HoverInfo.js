@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { matches } from '../useMediaQuery';
 
 const CARD_WIDTH = 270;
 const CARD_HEIGHT_GUESS = 130;
@@ -12,11 +13,13 @@ export default function HoverInfo({ title, description, docId, block = false, ch
   const [position, setPosition] = useState(null);
 
   const show = () => {
+    // On touch screens a tap would open the card on top of the next button the user wants to tap.
+    if (matches('(hover: none)')) return;
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       if (!anchor.current) return;
       const rect = anchor.current.getBoundingClientRect();
-      const left = Math.min(Math.max(8, rect.left), window.innerWidth - CARD_WIDTH - 8);
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - CARD_WIDTH - 8));
       const above = rect.bottom + CARD_HEIGHT_GUESS > window.innerHeight;
       setPosition({ left, top: above ? rect.top - 6 : rect.bottom + 6, above });
     }, 300);
@@ -54,7 +57,7 @@ export default function HoverInfo({ title, description, docId, block = false, ch
         <span
           role="tooltip"
           className={`tu-hovercard ${position.above ? 'is-above' : ''}`}
-          style={{ left: position.left, top: position.top, width: CARD_WIDTH }}
+          style={{ left: position.left, top: position.top, width: CARD_WIDTH, maxWidth: 'calc(100vw - 16px)' }}
           onMouseEnter={() => clearTimeout(timer.current)}
           onMouseLeave={hide}
         >

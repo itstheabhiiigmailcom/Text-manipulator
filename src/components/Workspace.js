@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TOOLS_BY_ID } from '../tools/registry';
 import { runPipeline } from '../tools/pipeline';
 import usePersistentState from '../usePersistentState';
+import useMediaQuery, { COMPACT_QUERY } from '../useMediaQuery';
 import Editor from './Editor';
 import { useFindReplace } from './FindReplacePanel';
 import ToolSidebar from './ToolSidebar';
@@ -21,6 +22,25 @@ export default function Workspace({ showAlert }) {
   const [toolOptions, setToolOptions] = usePersistentState('textutils.toolOptions', {});
   const [collapsed, setCollapsed] = usePersistentState('textutils.toolsCollapsed', false);
   const fr = useFindReplace(input);
+
+  // Phones and tablets show the tools as a bottom sheet that starts closed, independent of the desktop setting.
+  const compact = useMediaQuery(COMPACT_QUERY);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const panelCollapsed = compact ? !sheetOpen : collapsed;
+  const setPanelCollapsed = compact ? (value) => setSheetOpen(!value) : setCollapsed;
+  const sheetVisible = compact && sheetOpen;
+
+  useEffect(() => {
+    if (!sheetVisible) return undefined;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => e.key === 'Escape' && setSheetOpen(false);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [sheetVisible]);
 
   // "Try it" links from the docs arrive as /tools?select=<tool id>.
   const requested = params.get('select');
@@ -100,13 +120,13 @@ export default function Workspace({ showAlert }) {
   ) : null;
 
   return (
-    <div className={`tu-workspace ${collapsed ? 'is-collapsed' : ''}`}>
+    <div className={`tu-workspace ${panelCollapsed ? 'is-collapsed' : ''}`}>
       <main className="tu-main">
         <div className="tu-steps" aria-label="Selected tools">
           <span className="tu-steps-label">Applied:</span>
           {steps.length === 0 ? (
             <span className="tu-steps-empty">
-              Nothing yet — pick tools from the panel on the right. They stay selected until you remove them, and the output updates as you type.
+              Nothing yet — pick tools from the {compact ? 'Tools button' : 'panel on the right'}. They stay selected until you remove them, and the output updates as you type.
             </span>
           ) : (
             <>
@@ -147,7 +167,7 @@ export default function Workspace({ showAlert }) {
             label="Output"
             value={steps.length ? output : ''}
             readOnly
-            placeholder={input ? 'Select a tool on the right to see the result here.' : 'Results appear here.'}
+            placeholder={input ? `Select a tool ${compact ? 'from Tools' : 'on the right'} to see the result here.` : 'Results appear here.'}
             status={status}
             actions={
               <>
@@ -169,9 +189,11 @@ export default function Workspace({ showAlert }) {
         </div>
       </main>
 
+      {sheetVisible && <div className="tu-sheet-backdrop" aria-hidden="true" onClick={() => setSheetOpen(false)} />}
       <ToolSidebar
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
+        collapsed={panelCollapsed}
+        onCollapse={setPanelCollapsed}
+        compact={compact}
         steps={steps}
         onClearSteps={() => setSteps([])}
         fr={fr}
