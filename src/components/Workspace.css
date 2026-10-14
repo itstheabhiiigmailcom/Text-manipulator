@@ -5,7 +5,7 @@
   --tu-accent: var(--bs-primary);
   --tu-accent-rgb: var(--bs-primary-rgb);
   --tu-editor-font: SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-  --tu-sticky-top: 4.5rem;
+  --tu-sticky-top: calc(var(--tu-nav-h) + 1rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 1.25rem;
@@ -684,25 +684,157 @@ textarea.tu-editor[readonly] {
   }
 }
 
+/* Phones and tablets: floating "Tools" button that opens the panel as a bottom sheet */
 @media (max-width: 991.98px) {
   .tu-workspace,
   .tu-workspace.is-collapsed {
     grid-template-columns: minmax(0, 1fr);
+    /* Room so the floating button never covers the output */
+    padding-bottom: 4.5rem;
   }
 
-  .tu-sidebar {
-    position: static;
-    max-height: 70vh;
+  .tu-sidebar.is-fab {
+    position: fixed;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 1030;
   }
 
-  .tu-rail-btn {
+  .tu-sidebar.is-fab .tu-rail-btn {
     flex-direction: row;
-    width: 100%;
-    justify-content: center;
-    padding: 0.5rem;
+    width: auto;
+    padding: 0.65rem 1.1rem;
+    font-size: 1rem;
+    color: #fff;
+    background: var(--tu-accent);
+    border-color: var(--tu-accent);
+    border-radius: 2rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(var(--tu-accent-rgb), 0.45);
+    animation: tu-pop-in 0.2s ease;
   }
 
-  .tu-rail-label {
+  .tu-sidebar.is-fab .tu-rail-btn .badge {
+    color: var(--tu-accent) !important;
+    background: #fff !important;
+  }
+
+  .tu-sidebar.is-fab .tu-rail-label {
     writing-mode: horizontal-tb;
+  }
+
+  .tu-sidebar.is-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 1045;
+    height: min(85vh, 760px);
+    height: min(85dvh, 760px);
+    max-height: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-radius: 1rem 1rem 0 0;
+    border-bottom: 0;
+    box-shadow: 0 -0.75rem 2rem rgba(0, 0, 0, 0.25);
+    animation: tu-sheet-up 0.25s ease-out;
+  }
+
+  .tu-sheet-handle {
+    width: 2.5rem;
+    height: 0.3rem;
+    margin: 0.5rem auto 0;
+    border-radius: 1rem;
+    background: var(--tu-border);
+  }
+
+  .tu-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    background: rgba(0, 0, 0, 0.45);
+    animation: tu-fade-in 0.2s ease;
+  }
+
+  /* Larger tap targets */
+  .tu-section-header {
+    padding: 0.75rem;
+  }
+
+  .tu-toggle-btn {
+    min-height: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  .tu-chip {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  .tu-subtab {
+    padding: 0.45rem 0;
+  }
+
+  /* 16px inputs stop iOS from zooming in on focus */
+  .tu-sidebar .form-control,
+  .tu-sidebar .form-select {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .tu-editor {
+    height: 230px;
+    min-height: 180px;
+    font-size: 16px;
+  }
+
+  .tu-steps {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .tu-pane-actions .btn {
+    padding: 0.3rem 0.6rem;
+  }
+
+  .tu-match-old,
+  .tu-match-new {
+    max-width: 35%;
+  }
+}
+
+@keyframes tu-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes tu-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-sidebar.is-sheet,
+  .tu-sheet-backdrop,
+  .tu-sidebar.is-fab .tu-rail-btn {
+    animation: none;
   }
 }

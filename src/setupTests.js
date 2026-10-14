@@ -8,3 +8,6 @@ import { TextEncoder, TextDecoder } from 'util';
 // jsdom doesn't provide these, browsers do.
 if (!global.TextEncoder) global.TextEncoder = TextEncoder;
 if (!global.TextDecoder) global.TextDecoder = TextDecoder;
+
+// jsdom doesn't implement scrolling.
+window.scrollTo = () => {};

@@ -6,7 +6,17 @@ import Navbar from './components/Navbar';
 import TextForm from './components/TextForm';
 import Workspace from './components/Workspace';
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+
+// A new page starts at the top; links to a docs entry (#hash) scroll themselves.
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   //usestate to set the dark Mode
@@ -46,6 +56,7 @@ function App() {
   return (
     <>
       <Router>
+        <ScrollToTop />
         <Navbar title="Textsmith" mode={mode} toggleMode={toggleMode} />
         <Alert alert={alert} />
         <div className="my-3">

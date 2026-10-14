@@ -141,7 +141,7 @@ function CategoryBody({ category, toggleProps }) {
   );
 }
 
-export default function ToolSidebar({ collapsed, onCollapse, steps, onClearSteps, fr, findSelected, onToggleFind, toggleProps, initialOpen = 'clean' }) {
+export default function ToolSidebar({ collapsed, onCollapse, compact = false, steps, onClearSteps, fr, findSelected, onToggleFind, toggleProps, initialOpen = 'clean' }) {
   const [query, setQuery] = useState('');
   // Only one section is open at a time; opening another closes the previous one.
   const [openId, setOpenId] = useState(initialOpen);
@@ -153,9 +153,9 @@ export default function ToolSidebar({ collapsed, onCollapse, steps, onClearSteps
 
   if (collapsed) {
     return (
-      <aside className="tu-sidebar is-collapsed">
+      <aside className={`tu-sidebar is-collapsed ${compact ? 'is-fab' : ''}`}>
         <button type="button" className="tu-rail-btn" onClick={() => onCollapse(false)} aria-label="Show tools panel" title="Show tools panel">
-          <span aria-hidden="true">«</span>
+          <span aria-hidden="true">{compact ? '☰' : '«'}</span>
           <span className="tu-rail-label">Tools</span>
           {steps.length > 0 && <span className="badge rounded-pill text-bg-primary">{steps.length}</span>}
         </button>
@@ -164,16 +164,23 @@ export default function ToolSidebar({ collapsed, onCollapse, steps, onClearSteps
   }
 
   return (
-    <aside className="tu-sidebar" aria-label="Tools panel">
+    <aside className={`tu-sidebar ${compact ? 'is-sheet' : ''}`} aria-label="Tools panel">
+      {compact && <div className="tu-sheet-handle" aria-hidden="true" />}
       <div className="tu-sidebar-header">
         <div className="d-flex align-items-center gap-2">
           <h2 className="tu-sidebar-title">Tools</h2>
           {steps.length > 0 && <span className="badge rounded-pill text-bg-primary">{steps.length} selected</span>}
         </div>
         <div className="d-flex gap-1">
-          <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => onCollapse(true)} aria-label="Hide tools panel" title="Hide tools panel">
-            »
-          </button>
+          {compact ? (
+            <button type="button" className="btn btn-sm btn-primary px-3" onClick={() => onCollapse(true)} aria-label="Hide tools panel">
+              Done
+            </button>
+          ) : (
+            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => onCollapse(true)} aria-label="Hide tools panel" title="Hide tools panel">
+              »
+            </button>
+          )}
         </div>
       </div>
       <input
